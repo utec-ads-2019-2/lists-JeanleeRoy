@@ -40,30 +40,28 @@ class ForwardList : public List<T> {
         }
 
         void pop_front() {
-            if (!this->empty()) {
-                Node<T>* temp = this->head;
-                this->nodes--;
-                if (this->nodes > 0)
-                    this->head = this->head->next;
-                else
-                    this->tail = this->head = nullptr;
-                delete temp;
-            } else throw invalid_argument("Empty List!");
+            if (this->empty()) throw invalid_argument("Empty List!");
+            Node<T>* temp = this->head;
+            this->nodes--;
+            if (this->nodes > 0)
+                this->head = this->head->next;
+            else
+                this->tail = this->head = nullptr;
+            delete temp;
         }
 
         void pop_back() {
-            if (!this->empty()) {
-                Node<T>* temp = this->head;
-                for (int i = 0; i < this->nodes-2; ++i)
-                    temp = temp->next;
-                delete this->tail;
-                this->nodes--;
-                if (this->nodes > 0) {
-                    this->tail = temp;
-                    this->tail->next = nullptr;
-                } else 
-                    this->tail = this->head = nullptr;
-            } else throw invalid_argument("Empty List!");
+            if (this->empty()) throw invalid_argument("Empty List!");
+            Node<T>* temp = this->head;
+            for (int i = 0; i < this->nodes-2; ++i)
+                temp = temp->next;
+            delete this->tail;
+            this->nodes--;
+            if (this->nodes > 0) {
+                this->tail = temp;
+                this->tail->next = nullptr;
+            } else 
+                this->tail = this->head = nullptr;
         }
 
         T operator[](int index) {
@@ -128,10 +126,8 @@ class ForwardList : public List<T> {
 
         void merge(ForwardList<T> &list) {
             Node<T>* temp = list.head;
-            for (int i = 0; i < list.nodes; ++i){
+            for (int i = 0; i < list.nodes; ++i, temp = temp->next)
                 this->push_back(temp->data);
-                temp = temp->next;
-            }
         }
 
         void print() {
@@ -141,7 +137,7 @@ class ForwardList : public List<T> {
                     cout << temp->data << " ";
                     temp = temp->next;
                 } cout << endl;
-            } else throw invalid_argument("Empty List!");
+            } cout << "Empty List!";
         }
 
         ~ForwardList() {

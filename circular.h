@@ -9,51 +9,106 @@ class CircularLinkedList : public List<T> {
         CircularLinkedList() : List<T>() {}
 
         T front() {
-            // TODO
+            return (this->empty()) ? throw invalid_argument("Empty List!") : this->head->data;
         }
 
         T back() {
-            // TODO
+            return (this->empty()) ? throw invalid_argument("Empty List!") : this->head->prev->data;
         }
 
         void push_front(T value) {
-            // TODO
+            Node<T>* temp = new Node<T>(value);
+            if ( this->empty() ){
+                temp->next = temp->prev = this->head;
+                this->head = temp;
+            } else {
+                temp->next = this->head;
+                temp->prev = this->head->prev;
+                this->head->prev = temp;
+                this->head = temp;
+            } this->nodes++;
         }
 
         void push_back(T value) {
-            // TODO
+            Node<T>* temp = new Node<T>(value);
+            if ( this->empty() ){
+                temp->next = temp->prev = this->head;
+                this->head = temp;
+            } else {
+                temp->next = this->head;
+                temp->prev = this->head->prev;
+                this->head->prev = temp;
+            } this->nodes++;
         }
 
         void pop_front() {
-            // TODO
+            if (this->empty()) throw invalid_argument("Empty List!");
+            Node<T>* temp = this->head;
+            this->nodes--;
+            if (this->nodes > 0) {
+                this->head = this->head->next;
+                this->head->prev = temp->prev;
+            } else
+                this->head = nullptr;
+            delete temp;
         }
 
         void pop_back() {
-            // TODO
+            if (this->empty()) throw invalid_argument("Empty List!");
+            Node<T>* temp = this->head->prev;
+            this->nodes--;
+            if (this->nodes > 0) {
+                this->head->prev = temp->prev;
+                temp->prev->next = this->head;
+            } else
+                this->head = nullptr;
+            delete temp;
         }
 
         T operator[](int index) {
-            // TODO
+            if (index < 0 || index >= this->nodes)
+                throw out_of_range("Out of range");
+            Node<T>* temp = this->head;
+            for (int i = 0; i < index; ++i)
+                temp = temp->next;
+            return temp->data;
         }
 
         bool empty() {
-            // TODO
+            return (this->head == nullptr);
         }
 
         int size() {
-            // TODO
+            return this->nodes;
         }
 
         void clear() {
-            // TODO
+            this->head->killSelf();
+            this->head = this->tail = nullptr;
+            this->nodes = 0;
         }
 
         void sort() {
-            // TODO
+            Node<T>* temp = this->head;
+            vector<T> sorted;
+            int n = this->nodes;
+            for (int i = 0; i < this->nodes; ++i, temp = temp->next)
+                sorted.push_back(temp->data);
+            std::sort(sorted.begin(), sorted.end());
+            this->clear();
+            for (int j = 0; j < n; ++j)
+                this->push_back(sorted[j]);
         }
     
         void reverse() {
-            // TODO
+            Node<T>* temp = this->head;
+            int n = this->nodes;
+            T arr[n];
+            for (int i = 0; i < n; ++i, temp = temp->next)
+                arr[n-1-i] = temp->data;
+            this->clear();
+            for (int j = 0; j < n; ++j)
+                this->push_back(arr[j]);
         }
 
         string name() {
@@ -68,8 +123,14 @@ class CircularLinkedList : public List<T> {
             // TODO
         }
 
-        void merge(CircularLinkedList<T> list) {
-            // TODO
+        void merge(CircularLinkedList<T> &list) {
+            Node<T>* temp = list.head;
+            for (int i = 0; i < list.nodes; ++i, temp = temp->next)
+                this->push_back(temp->data);
+        }
+
+        ~CircularLinkedList() {
+            if (!this->empty()) this->head->killSelf();
         }
 };
 
