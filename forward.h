@@ -42,32 +42,37 @@ class ForwardList : public List<T> {
         void pop_front() {
             if (!this->empty()) {
                 Node<T>* temp = this->head;
-                this->head = this->head->next;
-                delete temp;
                 this->nodes--;
+                if (this->nodes > 0)
+                    this->head = this->head->next;
+                else
+                    this->tail = this->head = nullptr;
+                delete temp;
             } else throw invalid_argument("Empty List!");
         }
 
         void pop_back() {
             if (!this->empty()) {
                 Node<T>* temp = this->head;
-                while (temp->next != this->tail)
+                for (int i = 0; i < this->nodes-2; ++i)
                     temp = temp->next;
                 delete this->tail;
-                this->tail = temp;
-                this->tail->next = nullptr;
                 this->nodes--;
+                if (this->nodes > 0) {
+                    this->tail = temp;
+                    this->tail->next = nullptr;
+                } else 
+                    this->tail = this->head = nullptr;
             } else throw invalid_argument("Empty List!");
         }
 
         T operator[](int index) {
-            if (index < this->nodes) {
-                Node<T>* temp = this->head;
-                for (int i = 0; i < index; ++i)
-                    temp = temp->next;
-                return temp->data;
-            } else
+            if (index < 0 || index >= this->nodes)
                 throw out_of_range("Out of range");
+            Node<T>* temp = this->head;
+            for (int i = 0; i < index; ++i)
+                temp = temp->next;
+            return temp->data;
         }
 
         bool empty() {
@@ -130,12 +135,13 @@ class ForwardList : public List<T> {
         }
 
         void print() {
-            Node<T>* temp = this->head;
-            for (int i = 0; i < this->nodes; ++i){
-                cout << temp->data << " ";
-                temp = temp->next;
-            }
-            cout << endl;
+            if (this->nodes > 0) {
+                Node<T>* temp = this->head;
+                for (int i = 0; i < this->nodes; ++i){
+                    cout << temp->data << " ";
+                    temp = temp->next;
+                } cout << endl;
+            } else throw invalid_argument("Empty List!");
         }
 
         ~ForwardList() {
