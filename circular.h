@@ -20,13 +20,18 @@ class CircularLinkedList : public List<T> {
             Node<T>* temp = new Node<T>(value);
             if ( this->empty() ){
                 temp->next = temp->prev = this->head;
-                this->head = temp;
             } else {
-                temp->next = this->head;
-                temp->prev = this->head->prev;
-                this->head->prev = temp;
-                this->head = temp;
-            } this->nodes++;
+                if ( this->nodes == 1) {
+                    temp->next = temp->prev = this->head;
+                    this->head->prev = this->head->next = temp;
+                } else {
+                    temp->next = this->head;
+                    temp->prev = this->head->prev;
+                    this->head->prev->next = temp;
+                    this->head->prev = temp;
+                }
+            } this->head = temp;
+            this->nodes++;
         }
 
         void push_back(T value) {
@@ -34,10 +39,17 @@ class CircularLinkedList : public List<T> {
             if ( this->empty() ){
                 temp->next = temp->prev = this->head;
                 this->head = temp;
-            } else {
-                temp->next = this->head;
-                temp->prev = this->head->prev;
-                this->head->prev = temp;
+            } 
+            else {
+                if ( this->nodes == 1) {
+                    temp->next = temp->prev = this->head;
+                    this->head->prev = this->head->next = temp;
+                } else {
+                    temp->next = this->head;
+                    temp->prev = this->head->prev;
+                    this->head->prev->next = temp;
+                    this->head->prev = temp;
+                }
             } this->nodes++;
         }
 
@@ -48,6 +60,7 @@ class CircularLinkedList : public List<T> {
             if (this->nodes > 0) {
                 this->head = this->head->next;
                 this->head->prev = temp->prev;
+                temp->prev->next = this->head;
             } else
                 this->head = nullptr;
             delete temp;
@@ -66,10 +79,11 @@ class CircularLinkedList : public List<T> {
         }
 
         T operator[](int index) {
-            if (index < 0 || index >= this->nodes)
+            if (index < 0)
                 throw out_of_range("Out of range");
             Node<T>* temp = this->head;
-            for (int i = 0; i < index; ++i)
+            int nodo = index%(this->nodes);
+            for (int i = 0; i < nodo; ++i)
                 temp = temp->next;
             return temp->data;
         }
@@ -83,8 +97,13 @@ class CircularLinkedList : public List<T> {
         }
 
         void clear() {
-            this->head->killSelf();
-            this->head = this->tail = nullptr;
+            if (this->empty()) return;
+            Node<T>* temp = this->head;
+            if (this->nodes > 1)
+                for (int i = 0; i < this->nodes; ++i, temp = temp->next)
+                delete temp->prev;
+            delete temp;
+            this->head = nullptr;
             this->nodes = 0;
         }
 
@@ -111,16 +130,26 @@ class CircularLinkedList : public List<T> {
                 this->push_back(arr[j]);
         }
 
+        void print() {
+            if (this->nodes > 0) {
+                Node<T>* temp = this->head;
+                for (int i = 0; i < this->nodes; ++i){
+                    cout << temp->data << " ";
+                    temp = temp->next;
+                } cout << endl;
+            } else cout << "Empty List!";
+        }
+
         string name() {
             return "Circular Linked List";
         }
 
         BidirectionalIterator<T> begin() {
-            // TODO
+            return BidirectionalIterator<T>(this->head);
         }
 
 	    BidirectionalIterator<T> end() {
-            // TODO
+            return BidirectionalIterator<T>(this->head);
         }
 
         void merge(CircularLinkedList<T> &list) {
@@ -130,7 +159,13 @@ class CircularLinkedList : public List<T> {
         }
 
         ~CircularLinkedList() {
-            if (!this->empty()) this->head->killSelf();
+            if (!this->empty()) {
+                Node<T>* temp = this->head;
+                if (this->nodes > 1)
+                    for (int i = 0; i < this->nodes; ++i, temp = temp->next)
+                    delete temp->prev;
+                delete temp;
+            }
         }
 };
 
