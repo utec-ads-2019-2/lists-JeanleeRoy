@@ -51,6 +51,7 @@ class ForwardList : public List<T> {
         }
 
         void pop_back() {
+            // No ew necesario controlar esto en el pop
             if (this->empty()) throw invalid_argument("Empty List!");
             Node<T>* temp = this->head;
             for (int i = 0; i < this->nodes-2; ++i)
@@ -102,6 +103,7 @@ class ForwardList : public List<T> {
         }
     
         void reverse() {
+            // Se podría hacer más eficiente
             Node<T>* temp = this->head;
             int n = this->nodes;
             T arr[n];

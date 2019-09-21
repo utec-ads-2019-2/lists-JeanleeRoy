@@ -99,7 +99,9 @@ class CircularLinkedList : public List<T> {
         void clear() {
             if (this->empty()) return;
             Node<T>* temp = this->head;
+            // Siempre se va a cumplir
             if (this->nodes > 1)
+            // Estás dando delete a un null
                 for (int i = 0; i < this->nodes; ++i, temp = temp->next)
                 delete temp->prev;
             delete temp;
@@ -125,6 +127,7 @@ class CircularLinkedList : public List<T> {
             T arr[n];
             for (int i = 0; i < n; ++i, temp = temp->next)
                 arr[n-1-i] = temp->data;
+                // Esto fallará por el clear
             this->clear();
             for (int j = 0; j < n; ++j)
                 this->push_back(arr[j]);
